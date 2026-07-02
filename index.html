@@ -186,7 +186,7 @@ Tra cứu đơn hàng theo username Threads
 
 id="username"
 
-placeholder="Ví dụ: habromania209"
+placeholder="Ví dụ: watermelon_lovealot"
 
 onkeydown="if(event.key==='Enter')searchUser()"
 
@@ -208,15 +208,12 @@ const url="https://opensheet.elk.sh/1pBV2xM79M2RVzfG-ogPoHqcS3ZZqXGJ1AVEgWqmB8Rs
 
 async function searchUser(){
 
-const user=document
-
-.getElementById("username")
-
-.value
-
-.trim()
-
-.toLowerCase();
+const user = document
+    .getElementById("username")
+    .value
+    .trim()
+    .replace(/^@/, "")
+    .toLowerCase();
 
 if(user=="") return;
 
@@ -312,7 +309,7 @@ Ngày đặt: ${r.Date}
 
 <br>
 
-${r["Đã check out MBS"]=="x" ? "✅ Đã check out MBS":"⌛ Chưa check out/Đơn chờ quay Gacha"}
+${r["Đã check out MBS"]=="x" ? "✅ Đã check out MBS":"⌛ Chưa check out chờ 2nd sale/Đơn chờ quay Gacha"}
 
 <br><br>
 
