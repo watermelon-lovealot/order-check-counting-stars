@@ -1,338 +1,81 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>T1 Merchandise Tracker - Counting Stars</title>
-
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,Helvetica,sans-serif;
-}
-
-body{
-
-background:linear-gradient(135deg,#ff4d6d,#ffaf40);
-
-min-height:100vh;
-
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-padding:20px;
-
-}
-
-.card{
-
-background:white;
-
-width:100%;
-
-max-width:700px;
-
-border-radius:20px;
-
-padding:35px;
-
-box-shadow:0 10px 40px rgba(0,0,0,.15);
-
-}
-
-h1{
-
-text-align:center;
-
-margin-bottom:10px;
-
-}
-
-.subtitle{
-
-text-align:center;
-
-color:#666;
-
-margin-bottom:30px;
-
-}
-
-input{
-
-width:100%;
-
-padding:14px;
-
-font-size:18px;
-
-border-radius:10px;
-
-border:1px solid #ccc;
-
-}
-
-button{
-
-margin-top:15px;
-
-width:100%;
-
-padding:14px;
-
-font-size:18px;
-
-background:#ff4d6d;
-
-border:none;
-
-color:white;
-
-border-radius:10px;
-
-cursor:pointer;
-
-}
-
-button:hover{
-
-background:#ff3257;
-
-}
-
-.summary{
-
-margin-top:25px;
-
-padding:20px;
-
-background:#f8f8f8;
-
-border-radius:15px;
-
-}
-
-.ok{
-
-color:green;
-
-font-weight:bold;
-
-}
-
-.warn{
-
-color:#d35400;
-
-font-weight:bold;
-
-}
-
-.bad{
-
-color:red;
-
-font-weight:bold;
-
-}
-
-.item{
-
-margin-top:12px;
-
-padding:12px;
-
-border-left:5px solid #ff4d6d;
-
-background:#fafafa;
-
-border-radius:8px;
-
-}
-
-a{
-
-color:#1565c0;
-
-text-decoration:none;
-
-}
-
+body{font-family:Arial,sans-serif;background:#f6f6f6;margin:0}
+.wrap{max-width:900px;margin:30px auto;background:#fff;padding:24px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+h1{text-align:center}
+.search{display:grid;grid-template-columns:1fr 180px 140px;gap:10px}
+.input{position:relative}
+.input span{position:absolute;left:10px;top:12px}
+input{width:100%;padding:12px 12px 12px 34px;box-sizing:border-box}
+button{background:#e53935;color:#fff;border:none;border-radius:8px;font-size:16px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}
+.card{background:#fafafa;padding:15px;border-radius:10px;text-align:center}
+.item{border-left:4px solid #e53935;background:#fcfcfc;padding:12px;margin:12px 0}
+.ok{color:green}.warn{color:#d97706}.bad{color:#c62828}
+@media(max-width:700px){.search,.cards{grid-template-columns:1fr}}
 </style>
-
 </head>
-
 <body>
-
-<div class="card">
-
+<div class="wrap">
 <h1>🍉 T1 Merchandise Tracker</h1>
+<p style="text-align:center">Tra cứu bằng Username + 4 số cuối SĐT</p>
 
-<p class="subtitle">
-
-Tra cứu đơn hàng theo username Threads
-
-</p>
-
-<input
-
-id="username"
-
-placeholder="Ví dụ: watermelon_lovealot"
-
-onkeydown="if(event.key==='Enter')searchUser()"
-
->
-
-<button onclick="searchUser()">
-
-Tra cứu
-
-</button>
+<div class="search">
+<div class="input"><span>👤</span><input id="username" placeholder="Ví dụ: watermelon_lovealot"></div>
+<div class="input"><span>📱</span><input id="phone4" maxlength="4" placeholder="6612"></div>
+<button onclick="searchUser()">🔍 Tra cứu</button>
+</div>
 
 <div id="output"></div>
-
 </div>
 
 <script>
+const URL="https://opensheet.elk.sh/1pBV2xM79M2RVzfG-ogPoHqcS3ZZqXGJ1AVEgWqmB8Rs/Sheet1";
+let cache=[];
 
-const url="https://opensheet.elk.sh/1pBV2xM79M2RVzfG-ogPoHqcS3ZZqXGJ1AVEgWqmB8Rs/Sheet1";
+async function loadData(){
+ cache=await fetch(URL+"?t="+Date.now()).then(r=>r.json());
+}
+loadData();
+setInterval(loadData,30000);
+
+function money(v){return Number(v).toLocaleString("vi-VN")+".000đ";}
 
 async function searchUser(){
-
-const user = document
-    .getElementById("username")
-    .value
-    .trim()
-    .replace(/^@/, "")
-    .toLowerCase();
-
-if(user=="") return;
-
-const data=await fetch(url).then(r=>r.json());
-
-const rows=data.filter(x=>
-
-x.User.toLowerCase()==user
-
-);
-
-if(rows.length==0){
-
-document.getElementById("output").innerHTML=
-
-"<div class='summary'><h3>❌ Không tìm thấy username.</h3></div>";
-
-return;
-
+ if(cache.length===0) await loadData();
+ const u=document.getElementById("username").value.trim().replace(/^@/,"").toLowerCase();
+ const p=document.getElementById("phone4").value.trim();
+ const rows=cache.filter(r=>(r.User||"").toLowerCase()==u && (r["4 số cuối SĐT"]||"")==p);
+ const out=document.getElementById("output");
+ if(rows.length===0){out.innerHTML="<h3>❌ Không tìm thấy hoặc sai 4 số cuối SĐT.</h3>";return;}
+ let total=0,paid=0;
+ rows.forEach(r=>{total+=+r["Tổng tiền"]||0;paid+=+r["Đã chuyển"]||0;});
+ let st=paid>=total?'<span class="ok">🟢 Đã thanh toán đủ</span>':paid==0?'<span class="bad">🔴 Chưa thanh toán</span>':'<span class="warn">🟡 Đã thanh toán một phần</span>';
+ let html=`<h2>@${rows[0].User}</h2>${st}
+ <div class="cards">
+ <div class="card"><b>💰 Tổng tiền</b><br>${money(total)}</div>
+ <div class="card"><b>💸 Đã chuyển</b><br>${money(paid)}</div>
+ <div class="card"><b>💵 Còn thiếu</b><br>${money(total-paid)}</div>
+ </div>`;
+ rows.forEach(r=>{
+ html+=`<div class="item">
+ <b>${r.Items}</b><br>
+ 📅 ${r.Date}<br>
+ 📦 SL: ${r["Số lượng"]}<br>
+ 💵 ${money(r["Tổng tiền"])}<br>
+ ${r["Đã check out MBS"]==="x"?"✅ Đã check out MBS":"⌛ Chưa check out chờ 2nd sale/Đơn chờ quay Gacha"}<br>
+ ${(r["Mã vận đơn SPX (khi đơn về HN)"]||"")?`🚚 ${r["Mã vận đơn SPX (khi đơn về HN)"]}<br>`:""}
+ ${r["Đã hoàn thành"]==="x"?"🎉 Đã hoàn thành<br>":""}
+ <a target="_blank" href="${r["Link Threads"]}">🔗 Xem Threads</a>
+ </div>`;
+ });
+ out.innerHTML=html;
 }
-
-let total=0;
-
-let paid=0;
-
-rows.forEach(r=>{
-
-total+=Number(r["Tổng tiền"]);
-
-paid+=Number(r["Đã chuyển"]);
-
-});
-
-let status="";
-
-if(paid>=total)
-
-status="<span class='ok'>🟢 Đã thanh toán đủ</span>";
-
-else if(paid==0)
-
-status="<span class='bad'>🔴 Chưa thanh toán</span>";
-
-else
-
-status="<span class='warn'>🟡 Đã thanh toán một phần</span>";
-
-let html="";
-
-html+=`
-
-<div class="summary">
-
-<h2>@${rows[0].User}</h2>
-
-<br>
-
-${status}
-
-<br><br>
-
-💰 Tổng tiền: <b>${total}k</b><br>
-
-💸 Đã chuyển: <b>${paid}k</b><br>
-
-💵 Còn thiếu: <b>${total-paid}k</b>
-
-<hr style="margin:20px 0">
-
-<h3>📦 Đơn hàng</h3>
-
-`;
-
-rows.forEach(r=>{
-
-html+=`
-
-<div class="item">
-
-<b>${r.Items}</b>
-
-<br>
-
-Số lượng: ${r["Số lượng"]}
-
-<br>
-
-Giá: ${r["Tổng tiền"]}k
-
-<br>
-
-Ngày đặt: ${r.Date}
-
-<br>
-
-${r["Đã check out MBS"]=="x" ? "✅ Đã check out MBS":"⌛ Chưa check out chờ 2nd sale/Đơn chờ quay Gacha"}
-
-<br><br>
-
-<a href="${r["Link Threads"]}" target="_blank">
-
-🔗 Xem bài Threads
-
-</a>
-
-</div>
-
-`;
-
-});
-
-html+="</div>";
-
-document.getElementById("output").innerHTML=html;
-
-}
-
 </script>
-
 </body>
-
 </html>
