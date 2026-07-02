@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>T1 Merchandise Tracker - Counting Stars</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+
+background:linear-gradient(135deg,#ff4d6d,#ffaf40);
+
+min-height:100vh;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+padding:20px;
+
+}
+
+.card{
+
+background:white;
+
+width:100%;
+
+max-width:700px;
+
+border-radius:20px;
+
+padding:35px;
+
+box-shadow:0 10px 40px rgba(0,0,0,.15);
+
+}
+
+h1{
+
+text-align:center;
+
+margin-bottom:10px;
+
+}
+
+.subtitle{
+
+text-align:center;
+
+color:#666;
+
+margin-bottom:30px;
+
+}
+
+input{
+
+width:100%;
+
+padding:14px;
+
+font-size:18px;
+
+border-radius:10px;
+
+border:1px solid #ccc;
+
+}
+
+button{
+
+margin-top:15px;
+
+width:100%;
+
+padding:14px;
+
+font-size:18px;
+
+background:#ff4d6d;
+
+border:none;
+
+color:white;
+
+border-radius:10px;
+
+cursor:pointer;
+
+}
+
+button:hover{
+
+background:#ff3257;
+
+}
+
+.summary{
+
+margin-top:25px;
+
+padding:20px;
+
+background:#f8f8f8;
+
+border-radius:15px;
+
+}
+
+.ok{
+
+color:green;
+
+font-weight:bold;
+
+}
+
+.warn{
+
+color:#d35400;
+
+font-weight:bold;
+
+}
+
+.bad{
+
+color:red;
+
+font-weight:bold;
+
+}
+
+.item{
+
+margin-top:12px;
+
+padding:12px;
+
+border-left:5px solid #ff4d6d;
+
+background:#fafafa;
+
+border-radius:8px;
+
+}
+
+a{
+
+color:#1565c0;
+
+text-decoration:none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>🍉 T1 Merchandise Tracker</h1>
+
+<p class="subtitle">
+
+Tra cứu đơn hàng theo username Threads
+
+</p>
+
+<input
+
+id="username"
+
+placeholder="Ví dụ: habromania209"
+
+onkeydown="if(event.key==='Enter')searchUser()"
+
+>
+
+<button onclick="searchUser()">
+
+Tra cứu
+
+</button>
+
+<div id="output"></div>
+
+</div>
+
+<script>
+
+const url="https://opensheet.elk.sh/1pBV2xM79M2RVzfG-ogPoHqcS3ZZqXGJ1AVEgWqmB8Rs/Sheet1";
+
+async function searchUser(){
+
+const user=document
+
+.getElementById("username")
+
+.value
+
+.trim()
+
+.toLowerCase();
+
+if(user=="") return;
+
+const data=await fetch(url).then(r=>r.json());
+
+const rows=data.filter(x=>
+
+x.User.toLowerCase()==user
+
+);
+
+if(rows.length==0){
+
+document.getElementById("output").innerHTML=
+
+"<div class='summary'><h3>❌ Không tìm thấy username.</h3></div>";
+
+return;
+
+}
+
+let total=0;
+
+let paid=0;
+
+rows.forEach(r=>{
+
+total+=Number(r["Tổng tiền"]);
+
+paid+=Number(r["Đã chuyển"]);
+
+});
+
+let status="";
+
+if(paid>=total)
+
+status="<span class='ok'>🟢 Đã thanh toán đủ</span>";
+
+else if(paid==0)
+
+status="<span class='bad'>🔴 Chưa thanh toán</span>";
+
+else
+
+status="<span class='warn'>🟡 Đã thanh toán một phần</span>";
+
+let html="";
+
+html+=`
+
+<div class="summary">
+
+<h2>@${rows[0].User}</h2>
+
+<br>
+
+${status}
+
+<br><br>
+
+💰 Tổng tiền: <b>${total}k</b><br>
+
+💸 Đã chuyển: <b>${paid}k</b><br>
+
+💵 Còn thiếu: <b>${total-paid}k</b>
+
+<hr style="margin:20px 0">
+
+<h3>📦 Đơn hàng</h3>
+
+`;
+
+rows.forEach(r=>{
+
+html+=`
+
+<div class="item">
+
+<b>${r.Items}</b>
+
+<br>
+
+Số lượng: ${r["Số lượng"]}
+
+<br>
+
+Giá: ${r["Tổng tiền"]}k
+
+<br>
+
+Ngày đặt: ${r.Date}
+
+<br>
+
+${r["Đã check out MBS"]=="x" ? "✅ Đã check out MBS":"⌛ Chưa check out/Đơn chờ quay Gacha"}
+
+<br><br>
+
+<a href="${r["Link Threads"]}" target="_blank">
+
+🔗 Xem bài Threads
+
+</a>
+
+</div>
+
+`;
+
+});
+
+html+="</div>";
+
+document.getElementById("output").innerHTML=html;
+
+}
+
+</script>
+
+</body>
+
+</html>
