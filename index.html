@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <link rel="icon" href="favicon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>T1 Merchandise Tracker - Counting Stars</title>
@@ -138,13 +139,13 @@
 
 <div class="card">
     <h1>🍉 T1 Merchandise Tracker - Counting Stars ✨</h1>
-    <p class="subtitle">Tra cứu đơn hàng chính xác theo Username Threads & SĐT</p>
+    <p class="subtitle">Tra cứu đơn hàng</p>
     
     <div class="input-group">
         <label for="username">Username Threads:</label>
         <input
             id="username"
-            placeholder="Ví dụ: _buu_16"
+            placeholder="Ví dụ: watermelon_lovealot"
             onkeydown="if(event.key==='Enter') focusPhone()"
         >
     </div>
@@ -155,7 +156,7 @@
             id="phone"
             type="tel"
             maxlength="4"
-            placeholder="Ví dụ: 2418"
+            placeholder="Ví dụ: 6612"
             onkeydown="if(event.key==='Enter') searchUser()"
         >
     </div>
@@ -260,7 +261,7 @@ async function searchUser(){
                     <div class="item-title"><b>${r["Items"] || "Không rõ sản phẩm"}</b></div>
                     <div class="info-row"><span class="info-label">Số lượng:</span> ${r["Số lượng"] || 1} | <span class="info-label">Giá:</span> ${r["Tổng tiền"]}k</div>
                     <div class="info-row"><span class="info-label">Ngày đặt:</span> ${r["Date"] || "N/A"}</div>
-                    <div class="info-row"><span class="info-label">Trạng thái hệ thống:</span> ${mbsCheck}</div>
+                    <div class="info-row"><span class="info-label">Trạng thái check out MBS:</span> ${mbsCheck}</div>
                     <div class="info-row"><span class="info-label">Trạng thái đơn:</span> ${hoanThanh}</div>
                     
                     <div class="info-row"><span class="info-label">Hình thức:</span> ${r["Hình thức giao dịch"] || "N/A"}</div>
