@@ -262,10 +262,11 @@ async function searchUser(){
                     <div class="info-row"><span class="info-label">Số lượng:</span> ${r["Số lượng"] || 1} | <span class="info-label">Giá:</span> ${r["Tổng tiền"]}k</div>
                     <div class="info-row"><span class="info-label">Ngày đặt:</span> ${r["Date"] || "N/A"}</div>
                     <div class="info-row"><span class="info-label">Trạng thái check out MBS:</span> ${mbsCheck}</div>
+                    <div class="info-row"><span class="info-label">Tình trạng pickup:</span> ${pickupStatus}</div>
                     <div class="info-row"><span class="info-label">Trạng thái đơn:</span> ${hoanThanh}</div>
                     
                     <div class="info-row"><span class="info-label">Hình thức:</span> ${r["Hình thức giao dịch"] || "N/A"}</div>
-                    <div class="info-row"><span class="info-label">Tình trạng nhận hàng:</span> ${pickupStatus}</div>
+
             `;
         
             // Nếu đơn hàng cần ship (có địa chỉ hoặc có thông tin vận đơn) thì hiển thị khối vận chuyển
