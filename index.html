@@ -139,7 +139,8 @@
 
 <div class="card">
     <h1>🍉 T1 Merchandise Tracker - Counting Stars ✨</h1>
-    <p class="subtitle">Tra cứu đơn hàng</p>
+    <p class="subtitle">Tra cứu đơn hàng bảo mật</p>
+    <p class="subtitle">Form ship/gdtt: https://forms.gle/fxM7v7xDxqGNstXa6</p>
     
     <div class="input-group">
         <label for="username">Username Threads:</label>
@@ -166,7 +167,8 @@
 </div>
 
 <script>
-const url="https://opensheet.elk.sh/1pBV2xM79M2RVzfG-ogPoHqcS3ZZqXGJ1AVEgWqmB8Rs/Sheet1";
+// dán link Web App của Google Apps Script có đuôi /exec của bạn vào đây
+const url = "https://script.google.com/macros/s/AKfycbxZ8IKeZLZruaOzDiuuQu24knO-9GPS_z81aH_eiCuAzV7IlQtaYv4PpcBkytsRbZ1aRA/exec";
 
 function focusPhone() {
     document.getElementById("phone").focus();
@@ -186,18 +188,19 @@ async function searchUser(){
         return;
     }
 
-    document.getElementById("output").innerHTML = "<div class='summary'><h3>⌛ Đang quét dữ liệu, vui lòng đợi...</h3></div>";
+    document.getElementById("output").innerHTML = "<div class='summary'><h3>⌛ Đang truy vấn dữ liệu từ cổng bảo mật, vui lòng đợi...</h3></div>";
 
     try {
-        const data = await fetch(url).then(r => r.json());
+        // Tạo URL chứa tham số để gửi trực tiếp lên Google Apps Script
+        const apiUrl = `${url}?user=${encodeURIComponent(user)}&phone=${encodeURIComponent(phone)}`;
         
-        // Lọc dữ liệu theo cấu trúc cột mới của bạn
-        const rows = data.filter(x => {
-            const sheetUser = x["User"] ? String(x["User"]).trim().toLowerCase() : "";
-            const sheetPhone = x["4 số cuối SĐT"] ? String(x["4 số cuối SĐT"]).trim() : "";
-            
-            return sheetUser === user && sheetPhone === phone;
-        });
+        const rows = await fetch(apiUrl).then(r => r.json());
+        
+        // Kiểm tra nếu phía Google Apps Script báo lỗi cấu trúc file
+        if (rows.error) {
+            document.getElementById("output").innerHTML = `<div class='summary'><h3>❌ Lỗi: ${rows.error}</h3></div>`;
+            return;
+        }
 
         if(rows.length == 0){
             document.getElementById("output").innerHTML = 
@@ -252,7 +255,6 @@ async function searchUser(){
             } else if (rawPickup === "") {
                 pickupStatus = "<span style='color:#777;'>⌛ Chờ lấy hàng</span>";
             } else {
-                // Nếu bạn điền thông tin khác (Ví dụ: "Hẹn ngày mai", "Nhờ bạn lấy hộ",...), web sẽ hiển thị nguyên văn nội dung đó
                 pickupStatus = `<span>📝 ${r["Trạng thái pickup"]}</span>`;
             }
         
@@ -264,9 +266,7 @@ async function searchUser(){
                     <div class="info-row"><span class="info-label">Trạng thái check out MBS:</span> ${mbsCheck}</div>
                     <div class="info-row"><span class="info-label">Tình trạng pickup:</span> ${pickupStatus}</div>
                     <div class="info-row"><span class="info-label">Trạng thái đơn:</span> ${hoanThanh}</div>
-                    
                     <div class="info-row"><span class="info-label">Hình thức:</span> ${r["Hình thức giao dịch"] || "N/A"}</div>
-
             `;
         
             // Nếu đơn hàng cần ship (có địa chỉ hoặc có thông tin vận đơn) thì hiển thị khối vận chuyển
@@ -298,7 +298,7 @@ async function searchUser(){
     } catch (error) {
         console.error(error);
         document.getElementById("output").innerHTML = 
-            "<div class='summary'><h3>❌ Không thể tải dữ liệu từ Google Sheets. Xin hãy thử lại sau ít phút!</h3></div>";
+            "<div class='summary'><h3>❌ Lỗi kết nối. Vui lòng kiểm tra lại cấu trúc Web App hoặc quyền truy cập link Script!</h3></div>";
     }
 }
 </script>
