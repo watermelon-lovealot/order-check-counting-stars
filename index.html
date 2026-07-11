@@ -232,7 +232,7 @@ async function searchUser(){
 
         let html = `
             <div class="summary">
-                <h2>Khách hàng: @${rows[0]["User"]}</h2>
+                <h2>User: @${rows[0]["User"]}</h2>
                 <div class="status-badge ${statusClass}">${statusText}</div>
                 <br><br>
                 <div class="info-row"><span class="info-label">💰 Tổng tiền đơn hàng:</span> <b>${total}k</b></div>
@@ -240,7 +240,7 @@ async function searchUser(){
                 <div class="info-row"><span class="info-label">💵 Còn thiếu:</span> <b>${total - paid}k</b></div>
                 
                 <hr style="margin:20px 0; border: 0; border-top: 1px dashed #ccc;">
-                <h3>📦 Danh sách vật phẩm (${rows.length})</h3>
+                <h3>📦 Danh sách mua hàng (${rows.length})</h3>
         `;
 
         rows.forEach(r => {
